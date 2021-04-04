@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: loadtest
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  labels:
+    name: load-test
+  name: load-test
+  namespace: loadtest
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: load-test
+    spec:
+      containers:
+      - args:
+        - -c
+        - runLocust.sh -d 1 -u ${USERS} -r ${SPAWN_RATE} -t ${TIMEOUT} -h front-end.sock-shop.svc.cluster.local;
+        command:
+        - /bin/bash
+        image: load-test
+        imagePullPolicy: Never  # Assumes local build
+        name: load-test
+        resources: {}
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

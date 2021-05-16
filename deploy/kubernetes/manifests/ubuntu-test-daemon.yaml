@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  creationTimestamp: null
+  labels:
+    name: ubuntu-test-daemon
+  name: ubuntu-test-daemon
+  namespace: sock-shop
+spec:
+  revisionHistoryLimit: 2147483647
+  selector:
+    matchLabels:
+      name: ubuntu-test-daemon
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: ubuntu-test-daemon
+    spec:
+      containers:
+        - name: ubuntu-container-daemon
+          image: ubuntu:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          command: ["/bin/bash"]
+          args: ["-c", "while true; do echo hello; sleep 10;done"]
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
